@@ -11,7 +11,7 @@ import static groovyx.net.http.Method.*
 @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7')
 
 
-public class intelliAgent {
+public class intelliAgent implements Serializable{
     def scripts
     def currentBuild
 

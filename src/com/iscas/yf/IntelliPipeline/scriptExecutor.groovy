@@ -15,6 +15,7 @@ class scriptExecutor {
         this.currentBuild = currentBuild
     }
 
+    // TODO: 增加try-catch代码块进行错误处理，防止遇到错误之后pipeline engine将整个流程Abort掉
     public static execution() {
 
         // 新建一个node来执行step操作
