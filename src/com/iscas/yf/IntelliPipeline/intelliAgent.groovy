@@ -99,7 +99,7 @@ public class intelliAgent implements Serializable{
 
     // 控制台打印信息
     def logger(msg) {
-        this.scripts.steps.println(msg)
+        this.scripts.steps.echo(msg)
     }
 }
 
