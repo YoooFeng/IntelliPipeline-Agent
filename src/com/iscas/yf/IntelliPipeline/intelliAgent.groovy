@@ -28,6 +28,7 @@ public class intelliAgent implements Serializable{
 
     public def keepGetting() {
         // 持续发送HTTP请求的指示器
+        def count = 0
         def flag = true
         def info = "Nothing"
 
@@ -60,7 +61,13 @@ public class intelliAgent implements Serializable{
                         info = reader.text
 
                         // TODO: 测试看能否收到成功返回就执行scripts中的步骤
-                        myExecutor.execution();
+                        myExecutor.execution()
+
+                        // 执行5个stage就退出
+                        count += 1
+                        if(count == 5) {
+                            flag = false
+                        }
 
                         println "My response handler got response: ${resp.statusLine}"
                         println "Response length: ${resp.headers.'Content-Length'}"
@@ -85,8 +92,6 @@ public class intelliAgent implements Serializable{
                 throw err
             }
         }
-
-
     }
 }
 
