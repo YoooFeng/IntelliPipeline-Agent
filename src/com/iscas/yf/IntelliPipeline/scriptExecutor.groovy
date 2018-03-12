@@ -19,10 +19,14 @@ class scriptExecutor {
     // TODO: 增加try-catch代码块进行错误处理，防止遇到错误之后pipeline engine将整个流程Abort掉
     // 这个方法不能声明为static
     def execution() {
-
-        // 新建一个node来执行step操作
-        this.scripts.node{
-            this.scripts.steps.echo("Received information from local server!")
+        try{
+            // 新建一个node来执行step操作
+            this.scripts.node{
+                this.scripts.steps.echo("Received information from local server!")
+            }
+        } catch(err) {
+            // 先catch到步骤执行不成功的控制台错误，进行处理
+            this.currentBuild.result = 'FAILURE'
         }
     }
 }

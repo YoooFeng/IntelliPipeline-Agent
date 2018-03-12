@@ -17,7 +17,6 @@ class stepConverter {
     stepConverter(scripts, currentBuild) {
         this.scripts = scripts
         this.currentBuild = currentBuild
-        this.info = info
     }
 
 
