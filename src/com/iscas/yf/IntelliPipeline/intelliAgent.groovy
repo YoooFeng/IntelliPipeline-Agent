@@ -3,12 +3,13 @@
  */
 package com.iscas.yf.IntelliPipeline
 
+@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7')
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.RESTClient
 import groovyx.net.http.HttpResponseDecorator
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
-@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7')
+
 
 
 public class intelliAgent implements Serializable{
