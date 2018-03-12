@@ -35,7 +35,7 @@ public class intelliAgent {
                 def http = new HTTPBuilder()
                 http.request('http://localhost:8180', GET, TEXT) { req ->
                     // 设置url相关信息 - http://localhost:8180/upload
-                    uri.path='/upload'
+                    uri.path='/IntelliPipeline/upload'
 
                     // 设置请求头信息
                     headers.'User-Agent' = "Mozilla/5.0 Firefox/3.0.4"
