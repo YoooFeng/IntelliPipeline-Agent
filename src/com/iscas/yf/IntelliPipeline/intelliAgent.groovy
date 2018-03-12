@@ -30,7 +30,7 @@ public class intelliAgent implements Serializable{
     public def keepGetting() {
         // 持续发送HTTP请求的指示器
         def count = 0
-        def flag = true
+        def flag = false
         def info = "Nothing"
 
         while(flag) {
