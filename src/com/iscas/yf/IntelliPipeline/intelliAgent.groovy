@@ -24,8 +24,6 @@ public class intelliAgent implements Serializable{
     }
 
     def keepGetting() {
-
-        logger "keepGetting"
         // 持续发送HTTP请求的指示器
         def count = 0
         def flag = false
@@ -33,68 +31,69 @@ public class intelliAgent implements Serializable{
         def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
         def myConverter = new stepConverter(this.scripts, this.currentBuild)
 
-//        // 循环的设置有问题，
-//        while(flag) {
-//
-//        }
-        try {
-            logger "Try-catch code block"
-            // TODO: 如何接受返回来的字符串？
-            // 创建一个Http对象，向服务端发送请求
-            def http = new HTTPBuilder()
-            http.request('http://localhost:8180', GET, TEXT) { req ->
-                // 设置url相关信息 - http://localhost:8180/IntelliPipeline/upload
-                uri.path='/IntelliPipeline/upload'
+        // 将代码片段放入node代码段中
+        scripts.node{
+            logger "node block entering"
 
-                // 设置请求头信息
-                headers.'User-Agent' = "Mozilla/5.0 Firefox/3.0.4"
+            try {
+                logger "Try-catch block entering"
+                // TODO: 如何接受返回来的字符串？
+                // 创建一个Http对象，向服务端发送请求
+                def http = new HTTPBuilder()
+                http.request('http://localhost:8180', GET, TEXT) { req ->
+                    // 设置url相关信息 - http://localhost:8180/IntelliPipeline/upload
+                    uri.path='/IntelliPipeline/upload'
 
-                // 设置成功响应的处理闭包
-                response.success= {resp,reader->
-                    // 成功响应返回的200状态码
-                    assert resp.statusLine.statusCode == 200
+                    // 设置请求头信息
+                    headers.'User-Agent' = "Mozilla/5.0 Firefox/3.0.4"
 
-                    // 打印返回的详细信息
-                    logger resp.status
-                    logger resp.statusLine.statusCode
-                    logger resp.headers.'content-length'
+                    // 设置成功响应的处理闭包
+                    response.success= {resp,reader->
+                        // 成功响应返回的200状态码
+                        assert resp.statusLine.statusCode == 200
 
-                    logger "INTENTION! RETURNED TEXT IS BELOW!"
-                    logger reader.text
+                        // 打印返回的详细信息
+                        logger resp.status
+                        logger resp.statusLine.statusCode
+                        logger resp.headers.'content-length'
 
-                    // 把返回来的字符串赋值给变量info
-                    info = reader.text
+                        logger "INTENTION! RETURNED TEXT IS BELOW!"
+                        logger reader.text
 
-                    // TODO: 测试看能否收到成功返回就执行scripts中的步骤
-                    myExecutor.execution()
+                        // 把返回来的字符串赋值给变量info
+                        info = reader.text
 
-                    // 执行5个stage就退出
-                    count += 1
-                    if(count == 5) {
-                        flag = false
+                        // TODO: 测试看能否收到成功返回就执行scripts中的步骤
+                        myExecutor.execution()
+
+                        // 执行5个stage就退出
+                        count += 1
+                        if(count == 5) {
+                            flag = false
+                        }
+
+                        logger "My response handler got response: ${resp.statusLine}"
+                        logger "Response length: ${resp.headers.'Content-Length'}"
+                        System.out << reader // print response stream
                     }
 
-                    logger "My response handler got response: ${resp.statusLine}"
-                    logger "Response length: ${resp.headers.'Content-Length'}"
-                    System.out << reader // print response stream
-                }
+                    // 404
+                    response.'404' = {
+                        logger 'not found'
+                    }
 
-                // 404
-                response.'404' = {
-                    logger 'not found'
-                }
+                    // 401
+                    http.handler.'401' = { resp ->
+                        logger "Access denied"
+                    }
 
-                // 401
-                http.handler.'401' = { resp ->
-                    logger "Access denied"
+                    // 未根据响应码指定的失败处理闭包
+                    response.failure = { println "Unexpected failure: ${resp.statusLine}" }
                 }
-
-                // 未根据响应码指定的失败处理闭包
-                response.failure = { println "Unexpected failure: ${resp.statusLine}" }
+            } catch (err) {
+                logger "Error occurred:" + err
+                throw err
             }
-        } catch (err) {
-            logger "Error occurred:" + err
-            throw err
         }
     }
 
