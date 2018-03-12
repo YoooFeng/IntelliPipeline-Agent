@@ -24,6 +24,8 @@ public class intelliAgent implements Serializable{
     }
 
     def keepGetting() {
+
+        logger "keepGetting"
         // 持续发送HTTP请求的指示器
         def count = 0
         def flag = false
@@ -36,6 +38,7 @@ public class intelliAgent implements Serializable{
 //
 //        }
         try {
+            logger "Try-catch code block"
             // TODO: 如何接受返回来的字符串？
             // 创建一个Http对象，向服务端发送请求
             def http = new HTTPBuilder()
