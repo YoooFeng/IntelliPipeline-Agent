@@ -21,12 +21,13 @@ class scriptExecutor {
     def execution() {
         try{
             // 新建一个node来执行step操作
-            this.scripts.node{
-                this.scripts.steps.echo("Received information from local server!")
+            this.scripts.node() {
+                this.scripts.steps.echo "Received information from local server!"
             }
         } catch(err) {
-            // 先catch到步骤执行不成功的控制台错误，进行处理
+            // 先catch到步骤执行不成功的控制台输出
             this.currentBuild.result = 'FAILURE'
         }
+
     }
 }

@@ -13,6 +13,7 @@ import static groovyx.net.http.Method.*
 
 
 public class intelliAgent implements Serializable{
+
     def scripts
     def currentBuild
 
@@ -22,10 +23,7 @@ public class intelliAgent implements Serializable{
         this.currentBuild = currentBuild
     }
 
-
-
-
-    public def keepGetting() {
+    def keepGetting() {
         // 持续发送HTTP请求的指示器
         def count = 0
         def flag = false
@@ -54,12 +52,12 @@ public class intelliAgent implements Serializable{
                     assert resp.statusLine.statusCode == 200
 
                     // 打印返回的详细信息
-                    println resp.status
-                    println resp.statusLine.statusCode
-                    println resp.headers.'content-length'
+                    logger resp.status
+                    logger resp.statusLine.statusCode
+                    logger resp.headers.'content-length'
 
-                    println "INTENTION! RETURNED TEXT IS BELOW!"
-                    println reader.text
+                    logger "INTENTION! RETURNED TEXT IS BELOW!"
+                    logger reader.text
 
                     // 把返回来的字符串赋值给变量info
                     info = reader.text
@@ -73,28 +71,33 @@ public class intelliAgent implements Serializable{
                         flag = false
                     }
 
-                    println "My response handler got response: ${resp.statusLine}"
-                    println "Response length: ${resp.headers.'Content-Length'}"
+                    logger "My response handler got response: ${resp.statusLine}"
+                    logger "Response length: ${resp.headers.'Content-Length'}"
                     System.out << reader // print response stream
                 }
 
                 // 404
                 response.'404' = {
-                    println 'not found'
+                    logger 'not found'
                 }
 
                 // 401
                 http.handler.'401' = { resp ->
-                    println "Access denied"
+                    logger "Access denied"
                 }
 
                 // 未根据响应码指定的失败处理闭包
                 response.failure = { println "Unexpected failure: ${resp.statusLine}" }
             }
         } catch (err) {
-            println "Error occurred:" + err
+            logger "Error occurred:" + err
             throw err
         }
+    }
+
+    // 控制台打印信息
+    def logger(msg) {
+        this.scripts.steps.prinln(msg)
     }
 }
 
