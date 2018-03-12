@@ -19,8 +19,8 @@ class scriptExecutor {
     public static execution() {
 
         // 新建一个node来执行step操作
-        scripts.node{
-            scripts.steps.echo("Received information from local server!")
+        this.scripts.node{
+            this.scripts.steps.echo("Received information from local server!")
         }
     }
 }
