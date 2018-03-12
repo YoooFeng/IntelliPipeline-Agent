@@ -22,8 +22,6 @@ public class intelliAgent implements Serializable{
         this.currentBuild = currentBuild
     }
 
-    def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
-    def myConverter = new stepConverter(this.scripts, this.currentBuild)
 
 
 
@@ -32,6 +30,8 @@ public class intelliAgent implements Serializable{
         def count = 0
         def flag = false
         def info = "Nothing"
+        def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
+        def myConverter = new stepConverter(this.scripts, this.currentBuild)
 
 //        // 循环的设置有问题，
 //        while(flag) {
@@ -42,7 +42,7 @@ public class intelliAgent implements Serializable{
             // 创建一个Http对象，向服务端发送请求
             def http = new HTTPBuilder()
             http.request('http://localhost:8180', GET, TEXT) { req ->
-                // 设置url相关信息 - http://localhost:8180/upload
+                // 设置url相关信息 - http://localhost:8180/IntelliPipeline/upload
                 uri.path='/IntelliPipeline/upload'
 
                 // 设置请求头信息
