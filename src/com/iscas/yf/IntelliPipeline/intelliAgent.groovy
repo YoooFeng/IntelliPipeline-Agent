@@ -15,13 +15,16 @@ public class intelliAgent implements Serializable{
     def scripts
     def currentBuild
 
-    def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
-    def myConverter = new stepConverter(this.scripts, this.currentBuild)
-
+    // 构造函数
     intelliAgent(scripts, currentBuild){
         this.scripts = scripts
         this.currentBuild = currentBuild
     }
+
+    def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
+    def myConverter = new stepConverter(this.scripts, this.currentBuild)
+
+
 
     public def keepGetting() {
         // 持续发送HTTP请求的指示器

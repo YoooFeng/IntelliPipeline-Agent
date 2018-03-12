@@ -5,6 +5,7 @@ package com.iscas.yf.IntelliPipeline
  */
 class scriptExecutor {
 
+    // 加一个static关键字是否后续的scripts都不用加this前缀？
     def scripts
     def currentBuild
     def info = "nothing"
@@ -16,7 +17,8 @@ class scriptExecutor {
     }
 
     // TODO: 增加try-catch代码块进行错误处理，防止遇到错误之后pipeline engine将整个流程Abort掉
-    public static execution() {
+    // 这个方法不能声明为static
+    def execution() {
 
         // 新建一个node来执行step操作
         this.scripts.node{
