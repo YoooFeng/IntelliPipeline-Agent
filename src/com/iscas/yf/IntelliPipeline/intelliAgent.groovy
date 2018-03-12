@@ -5,8 +5,6 @@ package com.iscas.yf.IntelliPipeline
 
 @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7')
 import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.RESTClient
-import groovyx.net.http.HttpResponseDecorator
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
 
@@ -39,8 +37,8 @@ public class intelliAgent implements Serializable{
                 logger "Try-catch block entering"
                 // TODO: 如何接受返回来的字符串？
                 // 创建一个Http对象，向服务端发送请求
-                def http = new HTTPBuilder()
-                http.request('http://localhost:8180', GET, TEXT) { req ->
+                def http = new HTTPBuilder('http://localhost:8180')
+                http.request(GET, TEXT) { req ->
                     // 设置url相关信息 - http://localhost:8180/IntelliPipeline/upload
                     uri.path='/IntelliPipeline/upload'
 
@@ -48,7 +46,7 @@ public class intelliAgent implements Serializable{
                     headers.'User-Agent' = "Mozilla/5.0 Firefox/3.0.4"
 
                     // 设置成功响应的处理闭包
-                    response.success= {resp,reader->
+                    response.success= { resp,reader->
                         // 成功响应返回的200状态码
                         assert resp.statusLine.statusCode == 200
 
