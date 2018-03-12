@@ -88,7 +88,8 @@ public class intelliAgent implements Serializable{
                     }
 
                     // 未根据响应码指定的失败处理闭包
-                    response.failure = { println "Unexpected failure: ${resp.statusLine}" }
+                    response.failure = { logger "Unexpected failure: ${resp.statusLine}" }
+                    logger 'End of sending request'
                 }
             } catch (err) {
                 logger "Error occurred:" + err
