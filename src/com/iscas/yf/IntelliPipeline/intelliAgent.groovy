@@ -108,8 +108,8 @@ public class intelliAgent implements Serializable{
                 logger('Response:' + response.content)
                 logger currentBuild.currentResult
 
-                // 返回码从100-399，200表示成功返回。驱动
-                if(response.status == '200'){
+                // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
+                if(response.status == 200){
                     myExecutor.execution()
                     stageNumber += 1;
                 }
