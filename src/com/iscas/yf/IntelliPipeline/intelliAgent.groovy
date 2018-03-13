@@ -98,9 +98,9 @@ public class intelliAgent implements Serializable{
         while(flag) {
             try {
                 // body只能是patch、post、put请求？
-                def body = """
-                    {"consoleOutput": "$currentBuild."}
-                """
+//                def body = """
+//                    {"consoleOutput": "$currentBuild."}
+//                """
 
                 def response = scripts.steps.httpRequest "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stageNumber}"
 
