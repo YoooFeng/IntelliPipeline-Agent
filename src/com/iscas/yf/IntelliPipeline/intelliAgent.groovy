@@ -23,8 +23,8 @@ public class intelliAgent implements Serializable{
 
     def keepGetting() {
         // 持续发送HTTP请求的指示器
-        def count = 0
-        def flag = false
+        def stageNumber = 1
+        def flag = true
         def info = "Nothing"
         def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
         def myConverter = new stepConverter(this.scripts, this.currentBuild)
@@ -95,11 +95,33 @@ public class intelliAgent implements Serializable{
 //            }
 //        }
 
-        def response = scripts.steps.httpRequest "http://localhost:8180/IntelliPipeline/upload"
-        logger('Status:' + response.status)
-        logger('Response:' + response.content)
-        if(response.status == 'success'){
-            myExecutor.execution()
+        while(flag) {
+            try {
+                // body只能是patch、post、put请求？
+                def body = """
+                    {"consoleOutput": "$currentBuild."}
+                """
+
+                def response = scripts.steps.httpRequest "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stageNumber}"
+
+                logger('Status:' + response.status)
+                logger('Response:' + response.content)
+                logger currentBuild.currentResult
+
+                // 返回码从100-399，200表示成功返回。驱动
+                if(response.status == '200'){
+                    myExecutor.execution()
+                    stageNumber += 1;
+                }
+                if(stageNumber >= 5) {
+                    flag = false
+                }
+
+                // TODO: 如何发送带有当前构建信息的Request请求
+            } catch(err) {
+                logger "Network connection error occurred: " + err
+                throw err
+            }
         }
     }
 
