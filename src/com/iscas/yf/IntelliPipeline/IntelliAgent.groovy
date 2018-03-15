@@ -3,31 +3,32 @@
  */
 package com.iscas.yf.IntelliPipeline
 
-@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7')
-import groovyx.net.http.HTTPBuilder
-import static groovyx.net.http.ContentType.*
-import static groovyx.net.http.Method.*
+//@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7')
+//import groovyx.net.http.HTTPBuilder
+//import static groovyx.net.http.ContentType.*
+//import static groovyx.net.http.Method.*
 
 
 
-public class intelliAgent implements Serializable{
+public class IntelliAgent implements Serializable{
 
     def scripts
     def currentBuild
 
     // 构造函数
-    intelliAgent(scripts, currentBuild){
+    IntelliAgent(scripts, currentBuild){
         this.scripts = scripts
         this.currentBuild = currentBuild
     }
 
     def keepGetting() {
         // 持续发送HTTP请求的指示器
-        def stageNumber = 1
+        def stepNumber = 1
         def flag = true
-        def info = "Nothing"
-        def myExecutor = new scriptExecutor(this.scripts, this.currentBuild)
-        def myConverter = new stepConverter(this.scripts, this.currentBuild)
+        // 没有执行step，request type为initializing
+        def requestType = "initializing"
+        def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
+        def myConverter = new StepConverter(this.scripts, this.currentBuild)
 
         // 将代码片段放入node代码段中
 //        scripts.node{
@@ -95,33 +96,56 @@ public class intelliAgent implements Serializable{
 //            }
 //        }
 
-        while(flag) {
-            try {
-                // body只能是patch、post、put请求？
-//                def body = """
-//                    {"consoleOutput": "$currentBuild."}
-//                """
+        try {
+            while(flag){
+                // POST body, 需要增添更多内容
+                def body = """
+                    {"requestType": "$requestType"}
+                """
 
-                def response = scripts.steps.httpRequest "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stageNumber}"
+                // 发送POST Request
+                def response = scripts.steps.httpRequest(
+                        acceptType:'APPLICATION_JSON',
+                        contentType:'APPLICATION_JSON',
+                        httpMode:'POST',
+                        requestBody: body,
+                        url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stepNumber}")
 
                 logger('Status:' + response.status)
                 logger('Response:' + response.content)
                 logger currentBuild.currentResult
 
+                // 发送到converter进行解析
+                def parsedBody = myConverter.responseResolver(response.content)
+
+                // mock as "continue"
+                def decision = parsedBody.decisionType;
+                logger decision
+
+                def exeStep = parsedBody.executionStep;
+                logger exeStep
+
+
                 // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
                 if(response.status == 200){
                     myExecutor.execution()
-                    stageNumber += 1;
+                    stepNumber += 1
+                    // 执行step之后，返回json的分析数据，等待决策
+                    requestType = "consulting"
+                } else {
+                    // 出现网络错误，暂时退出. 应重发
+                    logger "Network connection error occurred"
+                    break;
                 }
-                if(stageNumber >= 5) {
+                if(stepNumber > 2) {
                     flag = false
                 }
-
-                // TODO: 如何发送带有当前构建信息的Request请求
-            } catch(err) {
-                logger "Network connection error occurred: " + err
-                throw err
             }
+        } catch(err) {
+            logger "An error occurred: " + err
+            // 执行出错了
+            // requestType = "error"
+            throw err
         }
     }
 

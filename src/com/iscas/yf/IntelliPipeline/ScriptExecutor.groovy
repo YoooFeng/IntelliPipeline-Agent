@@ -3,7 +3,7 @@ package com.iscas.yf.IntelliPipeline
 /**
  * Created by Summer on 2018/3/9.
  */
-class scriptExecutor {
+class ScriptExecutor {
 
     // 加一个static关键字是否后续的scripts都不用加this前缀？
     def scripts
@@ -11,7 +11,7 @@ class scriptExecutor {
     def info = "nothing"
 
 
-    scriptExecutor(scripts, currentBuild){
+    ScriptExecutor(scripts, currentBuild){
         this.scripts = scripts
         this.currentBuild = currentBuild
     }
