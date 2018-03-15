@@ -99,19 +99,21 @@ public class IntelliAgent implements Serializable{
         try {
             while(flag){
                 // POST body, 需要增添更多内容
-                def body = """
-                    {"requestType": "$requestType"}
-                """
+//                def body = """
+//                    {"requestType": "$requestType"}
+//                """
 
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
-                        acceptType:'APPLICATION_JSON',
-                        contentType:'APPLICATION_JSON',
-                        httpMode:'POST',
-                        requestBody: body,
+//                        acceptType:'APPLICATION_JSON',
+//                        contentType:'APPLICATION_JSON',
+//                        httpMode:'POST',
+//                        requestBody: body,
                         url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stepNumber}")
 
                 logger('Status:' + response.status)
+
+                // Response为空？
                 logger('Response:' + response.content)
                 logger currentBuild.currentResult
 
@@ -120,10 +122,10 @@ public class IntelliAgent implements Serializable{
 
                 // mock as "continue"
                 def decision = parsedBody.decisionType;
-                logger decision
+                logger "decision:" + decision
 
                 def exeStep = parsedBody.executionStep;
-                logger exeStep
+                logger "step:" + exeStep
 
 
                 // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
