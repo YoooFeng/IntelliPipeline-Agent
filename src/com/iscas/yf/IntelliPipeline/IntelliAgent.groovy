@@ -143,8 +143,9 @@ public class IntelliAgent implements Serializable{
                 if(stepNumber > 2) {
                     flag = false
                 }
-
-                assert this.scripts instanceof GroovyShell
+                // 不是GroovyShell类型
+                // assert this.scripts instanceof GroovyShell
+                logger(this.scripts.getClass())
             }
         } catch(err) {
             logger "An error occurred: " + err
