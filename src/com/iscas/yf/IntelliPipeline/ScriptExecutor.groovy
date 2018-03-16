@@ -21,9 +21,13 @@ class ScriptExecutor {
     def execution() {
         try{
             // 新建一个node来执行step操作
+            // 直接调用GroovyShell的evaluate方法执行代码段
+            new GroovyShell().evaluate("""
             this.scripts.node() {
                 this.scripts.steps.echo "Received information from local server!"
             }
+            """)
+
         } catch(err) {
             // 先catch到步骤执行不成功的控制台输出
             this.currentBuild.result = 'FAILURE'

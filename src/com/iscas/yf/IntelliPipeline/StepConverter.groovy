@@ -23,7 +23,8 @@ class StepConverter {
      * @Param: responseJson Server端返回的string格式的Json-Step信息
      */
     def responseResolver(String responseJson){
-//        def parsedBody = new JsonSlurper().parseText(responseJson)
+        // def parsedBody = new JsonSlurper().parseText(responseJson)
+        // readJSON需要安装插件pipeline-utility-steps
         def parsedBody = this.scripts.steps.readJSON(text: responseJson)
         return parsedBody
     }
