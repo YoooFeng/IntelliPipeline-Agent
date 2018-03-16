@@ -34,9 +34,14 @@ class ScriptExecutor {
 //            }
 //            """
 //            this.scripts.evaluate(action)
-            this.scripts.node() {
-                this.scripts.steps.echo "Received information from local server!"
-            }
+//            this.scripts.node() {
+//                this.scripts.steps.echo "Received information from local server!"
+//            }
+            // 通过直接传递step name和Map类型的参数的方式执行步骤
+            def Map<String, String> param = new HashMap<>()
+            param.put("message", "I am a param!!")
+            this.scripts.steps.invokeMethod("echo", param)
+
         } catch(err) {
             // 先catch到步骤执行不成功的控制台输出
             this.currentBuild.result = 'FAILURE'
