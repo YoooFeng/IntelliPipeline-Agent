@@ -145,7 +145,7 @@ public class IntelliAgent implements Serializable{
                 }
                 // 不是GroovyShell类型
                 // assert this.scripts instanceof GroovyShell
-                logger(this.scripts.getClass())
+                logger(this.scripts.getClass().toString())
             }
         } catch(err) {
             logger "An error occurred: " + err
