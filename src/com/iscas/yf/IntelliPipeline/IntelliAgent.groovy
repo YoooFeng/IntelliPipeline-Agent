@@ -102,7 +102,6 @@ public class IntelliAgent implements Serializable{
 //                def body = """
 //                    {"requestType": "$requestType"}
 //                """
-
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
 //                        acceptType:'APPLICATION_JSON',
@@ -118,8 +117,12 @@ public class IntelliAgent implements Serializable{
                 logger('Response:' + response.content)
                 logger currentBuild.currentResult
 
-                // 发送到converter进行解析
-                def parsedBody = myConverter.responseResolver(response.content)
+                // 发送到converter进行解析, 获取stepName和stepParams
+                def Map<String, String> stepParams = myConverter.responseResolverOfParams(response.content)
+                assert stepParams instanceof Map<String, String>
+
+                def String stepName = myConverter.responseResolverOfName(response.content)
+                assert stepName instanceof String
 
                 // mock as "continue"
                 def decision = parsedBody.decisionType;
@@ -146,7 +149,7 @@ public class IntelliAgent implements Serializable{
                 // 不是GroovyShell类型
                 // assert this.scripts instanceof GroovyShell
                 // this.scripts.getClass() == intelliPipelineProxy
-                logger(this.scripts.steps.getClass().toString())
+                // logger(this.scripts.steps.getClass().toString())
             }
         } catch(err) {
             logger "An error occurred: " + err
@@ -155,7 +158,6 @@ public class IntelliAgent implements Serializable{
             throw err
         }
     }
-
     // 控制台打印信息
     def logger(msg) {
         this.scripts.steps.echo(msg)

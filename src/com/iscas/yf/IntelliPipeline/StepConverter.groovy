@@ -22,11 +22,18 @@ class StepConverter {
      * 对返回的Response内容进行预处理
      * @Param: responseJson Server端返回的string格式的Json-Step信息
      */
-    def responseResolver(String responseJson){
+    def Map<String, String> responseResolverOfParams(String responseJson){
         // def parsedBody = new JsonSlurper().parseText(responseJson)
         // readJSON需要安装插件pipeline-utility-steps
         def parsedBody = this.scripts.steps.readJSON(text: responseJson)
-        return parsedBody
+        return parsedBody.executionStep.params
+    }
+
+    def String responseResolverOfName(String responseJson){
+        // def parsedBody = new JsonSlurper().parseText(responseJson)
+        // readJSON需要安装插件pipeline-utility-steps
+        def parsedBody = this.scripts.steps.readJSON(text: responseJson)
+        return parsedBody.executionStep.stepName
     }
 
     // 枚举所有可执行的步骤？
