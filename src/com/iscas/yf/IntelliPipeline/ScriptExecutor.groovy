@@ -31,6 +31,8 @@ class ScriptExecutor {
         } catch(err) {
             // 先catch到步骤执行不成功的控制台输出
             this.currentBuild.result = 'FAILURE'
+            // throw看看GroovyShell能不能用
+            throw err
         }
 
     }
