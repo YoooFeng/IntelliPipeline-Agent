@@ -28,13 +28,15 @@ class ScriptExecutor {
              * scripts没有传进去, 因为new的GroovyShell是在另一个进程空间的，相当于打开了一个新的控制台
              * Eval.me也不能用，原理跟new GroovyShell相同
              * */
-            def  String action = """
+//            def action = """
+//            this.scripts.node() {
+//                this.scripts.steps.echo "Received information from local server!"
+//            }
+//            """
+//            this.scripts.evaluate(action)
             this.scripts.node() {
                 this.scripts.steps.echo "Received information from local server!"
             }
-            """
-            action.execute()
-
         } catch(err) {
             // 先catch到步骤执行不成功的控制台输出
             this.currentBuild.result = 'FAILURE'

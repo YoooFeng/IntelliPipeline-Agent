@@ -143,6 +143,8 @@ public class IntelliAgent implements Serializable{
                 if(stepNumber > 2) {
                     flag = false
                 }
+
+                assert this.scripts instanceof GroovyShell
             }
         } catch(err) {
             logger "An error occurred: " + err
