@@ -3,25 +3,28 @@ package com.iscas.yf.IntelliPipeline
 /**
  * Created by Summer on 2018/3/7.
  */
-import groovy.json.*
+//import groovy.json.*
 
 class StepConverter {
     def scripts
     def currentBuild
-    def info
 
     /**
      * @Param：scripts Jenkins的pipeline执行引擎实例
      * @Param：currentBuild 当前构建对象的实例
-     * @Param：info 从IntelliPipeline发来的需要操作的信息
      * */
     StepConverter(scripts, currentBuild) {
         this.scripts = scripts
         this.currentBuild = currentBuild
     }
 
+    /**
+     * 对返回的Response内容进行预处理
+     * @Param: responseJson Server端返回的string格式的Json-Step信息
+     */
     def responseResolver(String responseJson){
-        def parsedBody = new JsonSlurper().parseText(responseJson)
+//        def parsedBody = new JsonSlurper().parseText(responseJson)
+        def parsedBody = this.scripts.steps.readJSON(text: responseJson)
         return parsedBody
     }
 

@@ -109,6 +109,7 @@ public class IntelliAgent implements Serializable{
 //                        contentType:'APPLICATION_JSON',
 //                        httpMode:'POST',
 //                        requestBody: body,
+                        httpMode: 'GET',
                         url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stepNumber}")
 
                 logger('Status:' + response.status)
