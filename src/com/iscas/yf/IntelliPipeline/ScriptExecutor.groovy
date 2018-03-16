@@ -3,6 +3,8 @@ package com.iscas.yf.IntelliPipeline
 /**
  * Created by Summer on 2018/3/9.
  */
+import groovy.util.Eval
+
 class ScriptExecutor {
 
     // 加一个static关键字是否后续的scripts都不用加this前缀？
@@ -21,8 +23,8 @@ class ScriptExecutor {
     def execution() {
         try{
             // 新建一个node来执行step操作
-            // 直接调用GroovyShell的evaluate方法执行代码段
-            new GroovyShell().evaluate("""
+            // 直接调用GroovyShell的evaluate方法执行代码段, scripts没有传进去
+            Eval.me("""
             this.scripts.node() {
                 this.scripts.steps.echo "Received information from local server!"
             }
