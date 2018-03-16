@@ -125,14 +125,15 @@ public class IntelliAgent implements Serializable{
                 assert stepName instanceof String
 
                 // mock as "continue"
-                def decision = parsedBody.decisionType;
-                logger "decision:" + decision
-
-                def exeStep = parsedBody.executionStep;
-                logger "step:" + exeStep
+//                def decision = parsedBody.decisionType;
+//                logger "decision:" + decision
+//
+//                def exeStep = parsedBody.executionStep;
+//                logger "step:" + exeStep
 
 
                 // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
+
                 if(response.status == 200){
                     myExecutor.execution()
                     stepNumber += 1
