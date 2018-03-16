@@ -23,12 +23,17 @@ class ScriptExecutor {
     def execution() {
         try{
             // 新建一个node来执行step操作
-            // 直接调用GroovyShell的evaluate方法执行代码段, scripts没有传进去
-            Eval.me("""
+            /**
+             * 直接调用GroovyShell的evaluate方法执行代码段,
+             * scripts没有传进去, 因为new的GroovyShell是在另一个进程空间的，相当于打开了一个新的控制台
+             * Eval.me也不能用，原理跟new GroovyShell相同
+             * */
+            def  String action = """
             this.scripts.node() {
                 this.scripts.steps.echo "Received information from local server!"
             }
-            """)
+            """
+            action.execute()
 
         } catch(err) {
             // 先catch到步骤执行不成功的控制台输出
@@ -36,6 +41,5 @@ class ScriptExecutor {
             // throw看看GroovyShell能不能用
             throw err
         }
-
     }
 }
