@@ -43,11 +43,13 @@ class ScriptExecutor {
     }
 
     def execution(String stepName, Map<String, Object> stepParams){
-        try{
-            this.scripts.steps.invokeMethod(stepName, stepParams)
-        } catch(err) {
-            this.currentBuild.result = 'FAILURE'
-            throw err
+        this.scripts.steps.node(){
+            try{
+                this.scripts.steps.invokeMethod(stepName, stepParams)
+            } catch(err) {
+                this.currentBuild.result = 'FAILURE'
+                throw err
+            }
         }
     }
 }
