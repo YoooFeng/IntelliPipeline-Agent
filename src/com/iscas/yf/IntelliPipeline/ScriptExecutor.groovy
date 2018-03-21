@@ -42,9 +42,9 @@ class ScriptExecutor {
         }
     }
 
-    def execution(String stepName, Map<String, String> params){
+    def execution(String stepName, Map<String, Object> stepParams){
         try{
-            this.scripts.steps.invokeMethod(stepName, params)
+            this.scripts.steps.invokeMethod(stepName, stepParams)
         } catch(err) {
             this.currentBuild.result = 'FAILURE'
             throw err

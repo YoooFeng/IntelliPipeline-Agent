@@ -22,7 +22,7 @@ public class IntelliAgent implements Serializable{
     }
 
     def keepGetting() {
-        // 持续发送HTTP请求的指示器
+        // 持续发送HTTP请求的指示器，start from 1
         def stepNumber = 1
         def flag = true
         // 没有执行step，request type为initializing
@@ -117,9 +117,9 @@ public class IntelliAgent implements Serializable{
                 logger('Response:' + response.content)
                 logger currentBuild.currentResult
 
-                // 发送到converter进行解析, 获取stepName和stepParams
-                def Map<String, String> stepParams = myConverter.responseResolverOfParams(response.content)
-                assert stepParams instanceof Map<String, String>
+                // 发送到converter进行解析, 分别获取stepName和stepParams
+                def Map<String, Object> stepParams = myConverter.responseResolverOfParams(response.content)
+                assert stepParams instanceof Map<String, Object>
 
                 def String stepName = myConverter.responseResolverOfName(response.content)
                 assert stepName instanceof String
@@ -135,7 +135,8 @@ public class IntelliAgent implements Serializable{
                 // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
 
                 if(response.status == 200){
-                    myExecutor.execution()
+                    // 调用invokeMethod方法执行step
+                    myExecutor.execution(stepName, stepParams)
                     stepNumber += 1
                     // 执行step之后，返回json的分析数据，等待决策
                     requestType = "consulting"
@@ -144,7 +145,7 @@ public class IntelliAgent implements Serializable{
                     logger "Network connection error occurred"
                     break;
                 }
-                if(stepNumber > 2) {
+                if(stepNumber > 8) {
                     flag = false
                 }
                 // 不是GroovyShell类型
