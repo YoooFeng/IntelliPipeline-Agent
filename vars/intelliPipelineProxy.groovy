@@ -10,6 +10,7 @@ def call(body) {
     body.delegate = userConfig
     body()
 
+    // this的类型是WorkflowScripts
     myIntelliAgent = new IntelliAgent(this, currentBuild)
     myIntelliAgent.keepGetting()
 }

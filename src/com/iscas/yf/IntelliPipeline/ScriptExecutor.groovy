@@ -32,6 +32,7 @@ class ScriptExecutor {
             // invokeMethod验证通过
             def Map<String, String> param = new HashMap<>()
             param.put("message", "I am a param!!")
+            // scripts.steps是DSL类的实例, org.jenkinsci.plugins.workflow.cps.DSL
             this.scripts.steps.invokeMethod("echo", param)
 
         } catch(err) {

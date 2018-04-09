@@ -22,7 +22,7 @@ public class IntelliAgent implements Serializable{
     }
 
     def keepGetting() {
-        // 持续发送HTTP请求的指示器，start from 1
+        // 持续发送HTTP请求的指示器
         def stepNumber = 1
         def flag = true
         // 没有执行step，request type为initializing
@@ -98,17 +98,38 @@ public class IntelliAgent implements Serializable{
 
         try {
             while(flag){
-                // POST body, 需要增添更多内容
-//                def body = """
-//                    {"requestType": "$requestType"}
-//                """
+
+                // changeSets，只需要在开始构建时发送一次
+                // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList)
+                def changeSets = this.scripts.currentBuild.changeSets
+
+                // Jenkins当前构建的控制台输出，动态获取。Log是String格式的。
+                def consoleOutput = this.scripts.currentBuild.rawBuild.log
+
+                // 当前构建的持续时间，单位毫秒
+                def durationTime = this.scripts.env.duration
+
+                // POST body, 只在第一次时发送changeSets?
+                def firstBody = """
+                    {"requestType": "$requestType"}
+                    {"consoleOutput": "$consoleOutput"}
+                    {"durationTime": "$durationTime"}
+                """
+
+                // 要发送的requestBody
+                def body = """
+                    {"requestType": "$requestType"}
+                    {"changeSets": "$changeSets"}
+                    {"consoleOutput": "$consoleOutput"}
+                    {"durationTime": "$durationTime"}
+                """
+
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
-//                        acceptType:'APPLICATION_JSON',
-//                        contentType:'APPLICATION_JSON',
-//                        httpMode:'POST',
-//                        requestBody: body,
-                        httpMode: 'GET',
+                        acceptType:'APPLICATION_JSON',
+                        contentType:'APPLICATION_JSON',
+                        httpMode:'POST',
+                        requestBody: body,
                         url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stepNumber}")
 
                 logger('Status:' + response.status)
