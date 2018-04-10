@@ -36,6 +36,11 @@ class StepConverter {
         return parsedBody.executionStep.stepName
     }
 
+    def String responseResolverOfDecision(String responseJson){
+        def parsedBody = this.scripts.steps.readJSON(text: responseJson)
+        return parsedBody.decisionType
+    }
+
     // 枚举所有可执行的步骤？
     def convertToStep(step){
 

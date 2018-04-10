@@ -23,8 +23,11 @@ public class IntelliAgent implements Serializable{
 
     def keepGetting() {
         // 持续发送HTTP请求的指示器
+        def stageNumber = 1
         def stepNumber = 1
+
         def flag = true
+
         // 没有执行step，request type为initializing
         def requestType = "initializing"
         def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
@@ -109,20 +112,24 @@ public class IntelliAgent implements Serializable{
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.env.duration
 
-                // POST body, 只在第一次时发送changeSets?
-                def firstBody = """
-                    {"requestType": "$requestType"}
-                    {"consoleOutput": "$consoleOutput"}
-                    {"durationTime": "$durationTime"}
-                """
+                def body = """ """
 
-                // 要发送的requestBody
-                def body = """
+                // POST body, 只在第一次时发送changeSets?
+                if(stageNumber == 1){
+                    body = """
                     {"requestType": "$requestType"}
                     {"changeSets": "$changeSets"}
                     {"consoleOutput": "$consoleOutput"}
                     {"durationTime": "$durationTime"}
                 """
+                } else {
+                    // 要发送的requestBody。定义是否正确？
+                    body = """
+                    {"requestType": "$requestType"}
+                    {"consoleOutput": "$consoleOutput"}
+                    {"durationTime": "$durationTime"}
+                """
+                }
 
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
@@ -130,13 +137,12 @@ public class IntelliAgent implements Serializable{
                         contentType:'APPLICATION_JSON',
                         httpMode:'POST',
                         requestBody: body,
-                        url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stepNumber}")
+                        url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stageNumber}&stepNumber=${stepNumber}")
 
                 logger('Status:' + response.status)
 
                 // Response为空？
                 logger('Response:' + response.content)
-                logger currentBuild.currentResult
 
                 // 发送到converter进行解析, 分别获取stepName和stepParams
                 def Map<String, Object> stepParams = myConverter.responseResolverOfParams(response.content)
@@ -144,6 +150,23 @@ public class IntelliAgent implements Serializable{
 
                 def String stepName = myConverter.responseResolverOfName(response.content)
                 assert stepName instanceof String
+
+                def String decision = myConverter.responseResolverOfDecision(response.content)
+                assert decision instanceof String
+
+                // 处理decision的各种情况
+                    // 当前stage执行完成，执行下一个stage
+                if(decision.equals("nextStage")){
+                    stageNumber++
+                }
+                    // 执行下一个step
+                else if(decision.equals("nextStep")){
+                    stepNumber++
+                }
+                    // build流程结束
+                else if(decision.equals("flowEnd")){
+                    flag = false
+                }
 
                 // mock as "continue"
 //                def decision = parsedBody.decisionType;
@@ -158,7 +181,7 @@ public class IntelliAgent implements Serializable{
                 if(response.status == 200){
                     // 调用invokeMethod方法执行step
                     myExecutor.execution(stepName, stepParams)
-                    stepNumber += 1
+                    // stageNumber += 1
                     // 执行step之后，返回json的分析数据，等待决策
                     requestType = "consulting"
                 } else {
@@ -166,13 +189,15 @@ public class IntelliAgent implements Serializable{
                     logger "Network connection error occurred"
                     break;
                 }
-                if(stepNumber > 8) {
-                    flag = false
-                }
+
+//                if(stageNumber > 8) {
+//                    flag = false
+//                }
                 // 不是GroovyShell类型
                 // assert this.scripts instanceof GroovyShell
                 // this.scripts.getClass() == intelliPipelineProxy
                 // logger(this.scripts.steps.getClass().toString())
+
             }
         } catch(err) {
             logger "An error occurred: " + err
@@ -181,6 +206,7 @@ public class IntelliAgent implements Serializable{
             throw err
         }
     }
+
     // 控制台打印信息
     def logger(msg) {
         this.scripts.steps.echo(msg)
