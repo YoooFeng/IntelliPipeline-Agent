@@ -105,7 +105,7 @@ public class IntelliAgent{
 
                 // changeSets，只需要在开始构建时发送一次
                 // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
-                // changeSets是两次build之间还是所有的commit？
+                // changeSets是两次build之间
                 def changeSets = this.scripts.currentBuild.changeSets
 
                 def String changeLog = "";
@@ -116,7 +116,7 @@ public class IntelliAgent{
                     for(int j = 0; j < entries.length; j++){
                         def entry = entries[j]
                         // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
-                        changeLog += "[${entry.commitId} by ${entry.author}: ${entry.msg}] "
+                        changeLog += "[commitId: ${entry.commitId} by ${entry.author}: ${entry.msg}] "
                     }
                 }
 
@@ -134,7 +134,7 @@ public class IntelliAgent{
                     {"requestType": "$requestType",
                      "stageNumber": "$stageNumber",
                      "stepNumber": "$stepNumber",
-                     "changeLog": "$changeLog",
+                     "changeLog": "fakeLog",
                      "consoleOutput": "$consoleOutput",
                      "durationTime": "$durationTime"}
                 """
