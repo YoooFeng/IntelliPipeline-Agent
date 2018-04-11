@@ -118,17 +118,17 @@ public class IntelliAgent{
                 // POST body, 只在第一次时发送changeSets?
                 if(stageNumber == 1){
                     body = """
-                    {"requestType": "$requestType"}
-                    {"changeSets": "$changeSets"}
-                    {"consoleOutput": "$consoleOutput"}
-                    {"durationTime": "$durationTime"}
+                    {"requestType": "$requestType",
+                    "changeSets": "$changeSets",
+                    "consoleOutput": "$consoleOutput",
+                    "durationTime": "$durationTime"}
                 """
                 } else {
                     // 要发送的requestBody。定义是否正确？
                     body = """
-                    {"requestType": "$requestType"}
-                    {"consoleOutput": "$consoleOutput"}
-                    {"durationTime": "$durationTime"}
+                    {"requestType": "$requestType",
+                    "consoleOutput": "$consoleOutput",
+                    "durationTime": "$durationTime"}
                 """
                 }
 
