@@ -111,26 +111,20 @@ public class IntelliAgent{
                 def consoleOutput = this.scripts.currentBuild.rawBuild.log
 
                 // 当前构建的持续时间，单位毫秒
-                def durationTime = this.scripts.env.duration
+                def durationTime = this.scripts.currentBuild.duration
 
                 def body = """ """
 
                 // POST body, 只在第一次时发送changeSets?
-                if(stageNumber == 1){
+                // 参数都放到body里面来，不要放在url中！
                     body = """
                     {"requestType": "$requestType",
-                    "changeSets": "$changeSets",
-                    "consoleOutput": "$consoleOutput",
-                    "durationTime": "$durationTime"}
+                     "stageNumber": "$stageNumber",
+                     "stepNumber": "$stepNumber",
+                     "changeSets": "$changeSets",
+                     "consoleOutput": "$consoleOutput",
+                     "durationTime": "$durationTime"}
                 """
-                } else {
-                    // 要发送的requestBody。定义是否正确？
-                    body = """
-                    {"requestType": "$requestType",
-                    "consoleOutput": "$consoleOutput",
-                    "durationTime": "$durationTime"}
-                """
-                }
 
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
@@ -138,7 +132,7 @@ public class IntelliAgent{
                         contentType:'APPLICATION_JSON',
                         httpMode:'POST',
                         requestBody: body,
-                        url: "http://localhost:8180/IntelliPipeline/upload?stageNumber=${stageNumber}&stepNumber=${stepNumber}")
+                        url: "http://localhost:8180/IntelliPipeline/upload")
 
                 logger('Status:' + response.status)
 
