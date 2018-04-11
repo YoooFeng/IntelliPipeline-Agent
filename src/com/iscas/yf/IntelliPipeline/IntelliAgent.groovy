@@ -10,7 +10,7 @@ package com.iscas.yf.IntelliPipeline
 
 
 
-public class IntelliAgent implements Serializable{
+public class IntelliAgent{
 
     def scripts
     def currentBuild
