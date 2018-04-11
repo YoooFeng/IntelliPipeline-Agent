@@ -21,6 +21,7 @@ public class IntelliAgent{
         this.currentBuild = currentBuild
     }
 
+    @NonCPS
     def keepGetting() {
         // 持续发送HTTP请求的指示器
         def stageNumber = 1
