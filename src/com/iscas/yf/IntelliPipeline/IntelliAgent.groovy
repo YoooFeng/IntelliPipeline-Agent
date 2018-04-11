@@ -134,8 +134,8 @@ public class IntelliAgent{
                     {"requestType": "$requestType",
                      "stageNumber": "$stageNumber",
                      "stepNumber": "$stepNumber",
-                     "changeLog": "fakeLog",
-                     "consoleOutput": "$consoleOutput",
+                     "changeLog": "$changeLog",
+                     "consoleOutput": "fake console",
                      "durationTime": "$durationTime"}
                 """
 
