@@ -104,8 +104,21 @@ public class IntelliAgent{
             while(flag){
 
                 // changeSets，只需要在开始构建时发送一次
-                // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList)
+                // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
+                // changeSets是两次build之间还是所有的commit？
                 def changeSets = this.scripts.currentBuild.changeSets
+
+                def String changeLog = "";
+
+                // 处理changeSets
+                for(int i = 0; i < changeSets.size(); i++){
+                    def entries = changeSets[i].items
+                    for(int j = 0; j < entries.length; j++){
+                        def entry = entries[j]
+                        // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
+                        changeLog += "[${entry.commitId} by ${entry.author}: ${entry.msg}] "
+                    }
+                }
 
                 // Jenkins当前构建的控制台输出，动态获取。Log是String格式的。
                 def consoleOutput = this.scripts.currentBuild.rawBuild.log
@@ -121,7 +134,7 @@ public class IntelliAgent{
                     {"requestType": "$requestType",
                      "stageNumber": "$stageNumber",
                      "stepNumber": "$stepNumber",
-                     "changeSets": "$changeSets",
+                     "changeLog": "$changeLog",
                      "consoleOutput": "$consoleOutput",
                      "durationTime": "$durationTime"}
                 """
