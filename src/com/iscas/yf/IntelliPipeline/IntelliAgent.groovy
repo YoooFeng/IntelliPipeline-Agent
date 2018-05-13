@@ -23,8 +23,8 @@ public class IntelliAgent{
 
     @NonCPS
     def keepGetting() {
+
         // 持续发送HTTP请求的指示器
-        def stageNumber = 1
         def stepNumber = 1
 
         def flag = true
@@ -108,7 +108,7 @@ public class IntelliAgent{
                 // changeSets是两次build之间
                 def changeSets = this.scripts.currentBuild.changeSets
 
-                def String changeLog = "";
+                def String commitSet = "";
 
                 // 处理changeSets
                 for(int i = 0; i < changeSets.size(); i++){
@@ -116,7 +116,7 @@ public class IntelliAgent{
                     for(int j = 0; j < entries.length; j++){
                         def entry = entries[j]
                         // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
-                        changeLog += "[commitId: ${entry.commitId} by ${entry.author}: ${entry.msg}] "
+                        commitSet += "[${entry.commitId} : ${entry.author} : ${entry.msg}] "
                     }
                 }
 
@@ -128,13 +128,12 @@ public class IntelliAgent{
 
                 def body = """ """
 
-                // POST body, 只在第一次时发送changeSets?
+                // POST body, 只在第一次时发送changeSets? 网络传输优化
                 // 参数都放到body里面来，不要放在url中！
                     body = """
                     {"requestType": "$requestType",
-                     "stageNumber": "$stageNumber",
                      "stepNumber": "$stepNumber",
-                     "changeLog": "$changeLog",
+                     "commitSet": "$commitSet",
                      "consoleOutput": "fake console",
                      "durationTime": "$durationTime"}
                 """
@@ -145,7 +144,7 @@ public class IntelliAgent{
                         contentType:'APPLICATION_JSON',
                         httpMode:'POST',
                         requestBody: body,
-                        url: "http://localhost:8180/IntelliPipeline/upload")
+                        url: "http://localhost:8180/IntelliPipeline/builds/upload")
 
                 logger('Status:' + response.status)
 
@@ -163,12 +162,8 @@ public class IntelliAgent{
                 assert decision instanceof String
 
                 // 处理decision的各种情况
-                    // 当前stage执行完成，执行下一个stage
-                if(decision.equals("nextStage")){
-                    stageNumber++
-                }
                     // 执行下一个step
-                else if(decision.equals("nextStep")){
+                if(decision.equals("nextStep")){
                     stepNumber++
                 }
                     // build流程结束
