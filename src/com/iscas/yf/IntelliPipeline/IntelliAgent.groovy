@@ -144,7 +144,7 @@ public class IntelliAgent{
                         contentType:'APPLICATION_JSON',
                         httpMode:'POST',
                         requestBody: body,
-                        url: "http://localhost:8180/IntelliPipeline/build/upload")
+                        url: "http://localhost:8180/IntelliPipeline/build_data/upload")
 
                 logger('Status:' + response.status)
 
