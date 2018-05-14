@@ -126,13 +126,16 @@ public class IntelliAgent{
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
 
+                def currentResult = this.scripts.currentBuild.currentResult
+
                 def body = """ """
 
                 // POST body, 只在第一次时发送changeSets? 网络传输优化
                 // 参数都放到body里面来，不要放在url中！
-                    body = """
+                body = """
                     {"requestType": "$requestType",
                      "stepNumber": "$stepNumber",
+                     "currentResult": "$currentResult",
                      "commitSet": "$commitSet",
                      "consoleOutput": "fake console",
                      "durationTime": "$durationTime"}
@@ -162,13 +165,17 @@ public class IntelliAgent{
                 assert decision instanceof String
 
                 // 处理decision的各种情况
-                    // 执行下一个step
-                if(decision.equals("nextStep")){
+                // 执行下一个step
+                if(decision.equals("NEXT")){
                     stepNumber++
                 }
-                    // build流程结束
-                else if(decision.equals("flowEnd")){
+                // build流程结束
+                else if(decision.equals("END")){
                     flag = false
+                }
+                // 重试当前步骤， 不作操作继续请求同一个step
+                else if(decision.equals("RETRY")){
+
                 }
 
                 // mock as "continue"
