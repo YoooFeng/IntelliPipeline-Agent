@@ -125,7 +125,6 @@ public class IntelliAgent{
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
-                logger(durationTime)
 
                 def currentResult = this.scripts.currentBuild.currentResult
                 logger(currentResult)
