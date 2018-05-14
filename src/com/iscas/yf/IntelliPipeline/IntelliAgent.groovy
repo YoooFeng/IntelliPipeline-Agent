@@ -30,7 +30,7 @@ public class IntelliAgent{
         def flag = true
 
         // 没有执行step，request type为initializing
-        def requestType = "initializing"
+        def requestType = "INIT"
         def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
         def myConverter = new StepConverter(this.scripts, this.currentBuild)
 
@@ -125,8 +125,10 @@ public class IntelliAgent{
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
+                logger(durationTime)
 
                 def currentResult = this.scripts.currentBuild.currentResult
+                logger(currentResult)
 
                 def body = """ """
 
@@ -140,6 +142,7 @@ public class IntelliAgent{
                      "consoleOutput": "fake console",
                      "durationTime": "$durationTime"}
                 """
+
 
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
@@ -168,6 +171,7 @@ public class IntelliAgent{
                 // 执行下一个step
                 if(decision.equals("NEXT")){
                     stepNumber++
+                    requestType = "RUNNING"
                 }
                 // build流程结束
                 else if(decision.equals("END")){
