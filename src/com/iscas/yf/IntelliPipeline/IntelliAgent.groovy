@@ -104,8 +104,7 @@ public class IntelliAgent{
         try {
             while(flag){
 
-
-                logger("while loop")
+                this.scripts.steps.echo("while loop")
                 // changeSets，只需要在开始构建时发送一次
                 // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
                 // changeSets是两次build之间
@@ -129,13 +128,13 @@ public class IntelliAgent{
 //                byte[] bytes = new byte[consoleOutput.available()]
 //                consoleOutput.read(bytes);
 //                String consoleStr = new String(bytes)
-                logger(consoleOutput)
+                this.scripts.steps.echo(consoleOutput)
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
 
                 def currentResult = this.scripts.currentBuild.currentResult
-                logger(currentResult)
+                this.scripts.steps.echo(currentResult)
 
                 def body = """ """
 
@@ -159,10 +158,10 @@ public class IntelliAgent{
                         requestBody: body,
                         url: "http://localhost:8180/IntelliPipeline/build_data/upload")
 
-                logger('Status:' + response.status)
+                this.scripts.steps.echo('Status:' + response.status)
 
                 // Response为空？
-                logger('Response:' + response.content)
+                this.scripts.steps.echo('Response:' + response.content)
 
                 // 先获取返回的decision
                 def String decision = myConverter.responseResolverOfDecision(response.content)
@@ -214,7 +213,7 @@ public class IntelliAgent{
                     requestType = "consulting"
                 } else {
                     // 出现网络错误，暂时退出. 应重发
-                    logger "Network connection error occurred"
+                    this.scripts.steps.echo "Network connection error occurred"
                     break;
                 }
 
@@ -233,11 +232,6 @@ public class IntelliAgent{
             // requestType = "error"
             throw err
         }
-    }
-
-    // 控制台打印信息
-    def logger(msg) {
-        this.scripts.steps.echo(msg)
     }
 }
 
