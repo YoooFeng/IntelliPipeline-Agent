@@ -105,6 +105,8 @@ public class IntelliAgent{
         try {
             while(flag){
 
+
+                logger("while loop")
                 // changeSets，只需要在开始构建时发送一次
                 // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
                 // changeSets是两次build之间
@@ -124,10 +126,10 @@ public class IntelliAgent{
 
                 // Jenkins当前构建的控制台输出. getLog(maxLine) 获取最新的指定行数的log， 类型List<String>
                 def consoleOutput = this.scripts.currentBuild.rawBuild.getLogInputStream()
-                byte[] bytes = new byte[consoleOutput.available()]
-                consoleOutput.read(bytes);
-                String consoleStr = new String(bytes)
-                logger(consoleStr)
+//                byte[] bytes = new byte[consoleOutput.available()]
+//                consoleOutput.read(bytes);
+//                String consoleStr = new String(bytes)
+                logger(consoleOutput)
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
@@ -144,7 +146,7 @@ public class IntelliAgent{
                      "stepNumber": "$stepNumber",
                      "currentResult": "$currentResult",
                      "commitSet": "$commitSet",
-                     "consoleOutput": "$consoleStr",
+                     "consoleOutput": "fake",
                      "durationTime": "$durationTime"}
                 """
 
