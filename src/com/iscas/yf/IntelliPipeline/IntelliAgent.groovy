@@ -227,7 +227,7 @@ public class IntelliAgent{
 
             }
         } catch(err) {
-            logger "An error occurred: " + err
+            this.scripts.steps.echo("An error occurred: " + err)
             // 执行出错了
             // requestType = "error"
             throw err
