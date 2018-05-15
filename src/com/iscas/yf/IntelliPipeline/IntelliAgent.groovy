@@ -120,8 +120,12 @@ public class IntelliAgent{
                     }
                 }
 
-                // Jenkins当前构建的控制台输出，动态获取。Log是String格式的。
-                def consoleOutput = this.scripts.currentBuild.rawBuild.log
+                // Jenkins当前构建的控制台输出. getLog(maxLine) 获取最新的指定行数的log， 类型List<String>
+                def consoleOutput = this.scripts.currentBuild.rawBuild.getLogInputStream()
+                byte[] bytes = new byte[consoleOutput.available()]
+                consoleOutput.read(bytes);
+                String consoleStr = new String(bytes)
+                logger(consoleStr)
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
@@ -131,14 +135,14 @@ public class IntelliAgent{
 
                 def body = """ """
 
-                // POST body, 只在第一次时发送changeSets? 网络传输优化
+                // POST body, 只在第一次时发送changeSet? 网络传输优化
                 // 参数都放到body里面来，不要放在url中！
                 body = """
                     {"requestType": "$requestType",
                      "stepNumber": "$stepNumber",
                      "currentResult": "$currentResult",
                      "commitSet": "$commitSet",
-                     "consoleOutput": "fake console",
+                     "consoleOutput": "$consoleStr",
                      "durationTime": "$durationTime"}
                 """
 
@@ -156,6 +160,14 @@ public class IntelliAgent{
                 // Response为空？
                 logger('Response:' + response.content)
 
+                // 先获取返回的decision
+                def String decision = myConverter.responseResolverOfDecision(response.content)
+                assert decision instanceof String
+                if(decision == "END"){
+                    break;
+                }
+
+
                 // 发送到converter进行解析, 分别获取stepName和stepParams
                 def Map<String, Object> stepParams = myConverter.responseResolverOfParams(response.content)
                 assert stepParams instanceof Map<String, Object>
@@ -163,8 +175,7 @@ public class IntelliAgent{
                 def String stepName = myConverter.responseResolverOfName(response.content)
                 assert stepName instanceof String
 
-                def String decision = myConverter.responseResolverOfDecision(response.content)
-                assert decision instanceof String
+
 
                 // 处理decision的各种情况
                 // 执行下一个step
