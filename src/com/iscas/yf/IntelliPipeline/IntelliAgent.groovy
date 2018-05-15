@@ -33,8 +33,15 @@ public class IntelliAgent{
 
         // 没有执行step，request type为initializing
         def requestType = "INIT"
-        def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
-        def myConverter = new StepConverter(this.scripts, this.currentBuild)
+        try{
+            def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
+            def myConverter = new StepConverter(this.scripts, this.currentBuild)
+        } catch (err){
+            logger("An error occurred when init: " + err)
+            throw err
+        }
+
+        logger("init success")
 
         // 将代码片段放入node代码段中
 //        scripts.node{
@@ -103,7 +110,7 @@ public class IntelliAgent{
 //        }
 
         try {
-            while(true){
+            while(flag){
 
 
                 logger("while loop")
