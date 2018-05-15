@@ -125,10 +125,10 @@ public class IntelliAgent{
 
                 // Jenkins当前构建的控制台输出. getLog(maxLine) 获取最新的指定行数的log， 类型List<String>
                 def consoleOutput = this.scripts.currentBuild.rawBuild.getLogInputStream()
-//                byte[] bytes = new byte[consoleOutput.available()]
-//                consoleOutput.read(bytes);
-//                String consoleStr = new String(bytes)
-                this.scripts.steps.echo(consoleOutput)
+                byte[] bytes = new byte[consoleOutput.available()]
+                consoleOutput.read(bytes);
+                String consoleStr = new String(bytes)
+                this.scripts.steps.echo(consoleStr)
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
@@ -145,7 +145,7 @@ public class IntelliAgent{
                      "stepNumber": "$stepNumber",
                      "currentResult": "$currentResult",
                      "commitSet": "$commitSet",
-                     "consoleOutput": "fake",
+                     "consoleOutput": "$consoleStr",
                      "durationTime": "$durationTime"}
                 """
 
