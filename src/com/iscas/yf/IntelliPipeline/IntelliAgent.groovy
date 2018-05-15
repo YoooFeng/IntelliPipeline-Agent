@@ -29,6 +29,8 @@ public class IntelliAgent{
 
         def flag = true
 
+        logger("keepGetting")
+
         // 没有执行step，request type为initializing
         def requestType = "INIT"
         def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
