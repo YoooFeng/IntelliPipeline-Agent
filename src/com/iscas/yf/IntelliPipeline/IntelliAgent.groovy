@@ -29,15 +29,11 @@ public class IntelliAgent{
 
         def flag = true
 
-        logger("keepGetting111")
-        logger("More info?")
         // 没有执行step，request type为initializing
         def requestType = "INIT"
 
         def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
         def myConverter = new StepConverter(this.scripts, this.currentBuild)
-
-        logger("init success")
 
         // 将代码片段放入node代码段中
 //        scripts.node{
