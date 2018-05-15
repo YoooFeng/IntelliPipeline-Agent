@@ -103,7 +103,7 @@ public class IntelliAgent{
 //        }
 
         try {
-            while(flag){
+            while(true){
 
 
                 logger("while loop")
