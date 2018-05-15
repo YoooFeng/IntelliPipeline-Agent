@@ -128,13 +128,13 @@ public class IntelliAgent{
                 byte[] bytes = new byte[consoleOutput.available()]
                 consoleOutput.read(bytes);
                 String consoleStr = new String(bytes)
-                this.scripts.steps.echo(consoleStr)
+                this.scripts.steps.echo("consoleStr: " + consoleStr);
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
 
                 def currentResult = this.scripts.currentBuild.currentResult
-                this.scripts.steps.echo(currentResult)
+                this.scripts.steps.echo("currentResult: " + currentResult)
 
                 def body = """ """
 
