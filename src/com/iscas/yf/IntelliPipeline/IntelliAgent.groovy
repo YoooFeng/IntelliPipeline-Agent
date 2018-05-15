@@ -32,14 +32,14 @@ public class IntelliAgent{
         logger("keepGetting")
 
         // 没有执行step，request type为initializing
-        def requestType = "INIT"
-        try{
-            def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
-            def myConverter = new StepConverter(this.scripts, this.currentBuild)
-        } catch (err){
-            logger("An error occurred when init: " + err)
-            throw err
-        }
+
+//        try{
+//            def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
+//            def myConverter = new StepConverter(this.scripts, this.currentBuild)
+//        } catch (err){
+//            logger("An error occurred when init: " + err)
+//            throw err
+//        }
 
         logger("init success")
 
@@ -117,6 +117,10 @@ public class IntelliAgent{
                 // changeSets，只需要在开始构建时发送一次
                 // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
                 // changeSets是两次build之间
+                def requestType = "INIT"
+                def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
+                def myConverter = new StepConverter(this.scripts, this.currentBuild)
+
                 def changeSets = this.scripts.currentBuild.changeSets
 
                 def String commitSet = "";
