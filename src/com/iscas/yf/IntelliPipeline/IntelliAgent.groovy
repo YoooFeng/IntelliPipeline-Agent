@@ -167,6 +167,7 @@ public class IntelliAgent{
                         contentType:'APPLICATION_JSON',
                         httpMode:'POST',
                         requestBody: body,
+                        consoleLogResponseBody: true,
                         url: "http://localhost:8180/IntelliPipeline/build_data/upload")
 
                 this.scripts.steps.echo('Status:' + response.status)
