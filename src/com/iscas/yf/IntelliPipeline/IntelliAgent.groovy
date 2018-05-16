@@ -162,13 +162,28 @@ public class IntelliAgent{
                 }
 
                 // 发送POST Request
-                def response = this.scripts.steps.httpRequest(
-                        acceptType:'APPLICATION_JSON',
-                        contentType:'APPLICATION_JSON',
-                        httpMode:'POST',
-                        requestBody: body,
-                        consoleLogResponseBody: true,
-                        url: "http://localhost:8180/IntelliPipeline/build_data/upload")
+//                def response = this.scripts.steps.httpRequest(
+//                        acceptType:'APPLICATION_JSON',
+//                        contentType:'APPLICATION_JSON',
+//                        httpMode:'POST',
+//                        requestBody: body,
+//                        consoleLogResponseBody: true,
+//                        url: "http://localhost:8180/IntelliPipeline/build_data/upload")
+
+                // 抛弃使用HttpRequest Plugin, 改为Groovy原生方法
+                def post = new URL("http://localhost:8180/IntelliPipeline/build_data/upload").openConnection();
+
+                post.setRequestMethod("POST")
+                post.setDoOutput(true)
+                post.setRequestProperty("Content-Type", "application/json")
+                post.getOutputStream().write(body.getBytes("UTF-8"))
+                def postResponseCode = post.getResponseCode()
+                def postResponseContent = ''
+                if(postResponseCode.equals(200)){
+                    postResponseContent = post.getInputStream().getText();
+                }
+
+                println(postResponseContent)
 
                 this.scripts.steps.echo('Status:' + response.status)
 
