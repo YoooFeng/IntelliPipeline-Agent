@@ -21,7 +21,7 @@ public class IntelliAgent{
         this.currentBuild = currentBuild
     }
 
-    @NonCPS
+
     def keepGetting() {
 
         // 持续发送HTTP请求的指示器
@@ -109,10 +109,6 @@ public class IntelliAgent{
                 // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
                 // changeSets是两次build之间
 
-                def changeSets = this.scripts.currentBuild.changeSets
-
-
-
                 // Jenkins当前构建的控制台输出. consoleStr是字符串， 验证可行
 //                def consoleOutput = this.scripts.currentBuild.rawBuild.getLogInputStream()
 //                byte[] bytes = new byte[consoleOutput.available()]
@@ -132,16 +128,7 @@ public class IntelliAgent{
 
                 if(requestType == "INIT"){
 
-                    def String commitSet = "";
-                    // 只在INIT的时候处理一次changeSets
-                    for(int i = 0; i < changeSets.size(); i++){
-                        def entries = changeSets[i].items
-                        for(int j = 0; j < entries.length; j++){
-                            def entry = entries[j]
-                            // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
-                            commitSet += "[${entry.commitId} : ${entry.author} : ${entry.msg}] "
-                        }
-                    }
+                    def String commitSet = processCommitSet()
 
                     body = """
                         {"requestType": "$requestType",
@@ -189,7 +176,7 @@ public class IntelliAgent{
 
                 flag = false
 
-                def parsedBody = this.scripts.steps.readJSON(text:postResponseContent)
+                def parsedBody = this.scripts.steps.readJSON(text: postResponseContent)
 
                 // 先获取返回的decision
                 def String decision = parsedBody.decision
@@ -243,8 +230,24 @@ public class IntelliAgent{
             this.scripts.steps.echo("An error occurred: " + err)
             // 执行出错了
             // requestType = "error"
-//            throw err
+            throw err
         }
+    }
+
+    @NonCPS
+    def processCommitSet(){
+        def changeSets = this.scripts.currentBuild.changeSets
+        def String commitSet = "";
+        // 只在INIT的时候处理一次changeSets
+        for(int i = 0; i < changeSets.size(); i++){
+            def entries = changeSets[i].items
+            for(int j = 0; j < entries.length; j++){
+                def entry = entries[j]
+                // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
+                commitSet += "[${entry.commitId} : ${entry.author} : ${entry.msg}] "
+            }
+        }
+        return commitSet
     }
 }
 
