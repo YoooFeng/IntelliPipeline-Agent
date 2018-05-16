@@ -208,14 +208,7 @@ public class IntelliAgent{
 
                 if(postResponseContent != ""){
                     // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
-                    this.scripts.steps.node(){
-                        try{
-                            this.scripts.steps.invokeMethod(stepName, stepParams)
-                        } catch(err) {
-                            this.currentBuild.result = 'FAILURE'
-                            throw err
-                        }
-                    }
+                    executeStep(stepName, stepParams)
                     requestType = "RUNNING"
                 } else {
                     // 出现网络错误，暂时退出. 应重发
@@ -264,6 +257,20 @@ public class IntelliAgent{
         }
         return ""
     }
+
+    def executeStep(String stepName, Map<String, Object> stepParams){
+        // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
+        this.scripts.steps.node(){
+            try{
+                this.scripts.steps.invokeMethod(stepName, stepParams)
+            } catch(err) {
+                this.currentBuild.result = 'FAILURE'
+                throw err
+            }
+        }
+    }
+
+
 }
 
 
