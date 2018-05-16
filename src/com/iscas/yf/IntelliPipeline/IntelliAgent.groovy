@@ -181,31 +181,30 @@ public class IntelliAgent{
                 def postResponseContent = ''
                 if(postResponseCode.equals(200)){
                     postResponseContent = post.getInputStream().getText();
+                } else {
+                    continue
                 }
 
-                println(postResponseContent)
                 this.scripts.steps.echo(postResponseContent)
 
                 flag = false
-//                this.scripts.steps.echo('Status:' + response.status)
-//
-//                // Response为空？
-//                this.scripts.steps.echo('Response:' + response.content)
-//
-//                // 先获取返回的decision
-//                def String decision = myConverter.responseResolverOfDecision(response.content)
-//                assert decision instanceof String
-//                if(decision == "END"){
-//                    break;
-//                }
-//
-//
-//                // 发送到converter进行解析, 分别获取stepName和stepParams
-//                def Map<String, Object> stepParams = myConverter.responseResolverOfParams(response.content)
-//                assert stepParams instanceof Map<String, Object>
-//
-//                def String stepName = myConverter.responseResolverOfName(response.content)
-//                assert stepName instanceof String
+
+                // 先获取返回的decision
+                def String decision = myConverter.responseResolverOfDecision(postResponseContent)
+                assert decision instanceof String
+                this.scripts.steps.echo("decision: " + decision)
+
+                if(decision == "END"){
+                    break;
+                }
+
+                // 发送到converter进行解析, 分别获取stepName和stepParams
+                def Map<String, Object> stepParams = myConverter.responseResolverOfParams(postResponseContent)
+                assert stepParams instanceof Map<String, Object>
+
+                def String stepName = myConverter.responseResolverOfName(postResponseContent)
+                assert stepName instanceof String
+                this.scripts.steps.echo("stepName: " + stepName)
 //
 //
 //
