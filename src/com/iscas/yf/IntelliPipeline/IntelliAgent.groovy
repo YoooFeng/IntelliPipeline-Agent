@@ -209,6 +209,7 @@ public class IntelliAgent{
                 if(postResponseContent != ""){
                     // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
                     executeStep(stepName, stepParams)
+                    this.scripts.steps.echo("step execution end")
                     requestType = "RUNNING"
                 } else {
                     // 出现网络错误，暂时退出. 应重发
