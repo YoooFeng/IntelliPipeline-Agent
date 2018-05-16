@@ -172,8 +172,6 @@ public class IntelliAgent{
 
                 this.scripts.steps.echo("Response: $postResponseContent")
 
-                flag = false
-
                 def parsedBody = this.scripts.steps.readJSON(text: postResponseContent)
 
                 // 先获取返回的decision
