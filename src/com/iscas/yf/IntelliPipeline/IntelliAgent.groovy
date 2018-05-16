@@ -21,7 +21,6 @@ public class IntelliAgent{
         this.currentBuild = currentBuild
     }
 
-
     def keepGetting() {
 
         // 持续发送HTTP请求的指示器
@@ -31,9 +30,6 @@ public class IntelliAgent{
 
         // 没有执行step，request type为initializing
         def requestType = "INIT"
-
-        def myExecutor = new ScriptExecutor(this.scripts, this.currentBuild)
-        def myConverter = new StepConverter(this.scripts, this.currentBuild)
 
         // 将代码片段放入node代码段中
 //        scripts.node{
@@ -180,54 +176,52 @@ public class IntelliAgent{
 
                 def parsedBody = this.scripts.steps.readJSON(text: postResponseContent)
 
-
                 // 先获取返回的decision
-                def decision = parsedBody.decision
+                def String decision = parsedBody.decisionType
                 // assert decision instanceof String
                 this.scripts.steps.echo("decision: " + decision)
 
-                if(decision == "END"){
+                // 先处理decision的各种情况
+                // 执行下一个step
+                if(decision.equals("NEXT")){
+                    stepNumber++
+                }
+                // build流程结束
+                else if(decision.equals("END")){
+                    flag = false
                     break;
+                }
+                // 重试当前步骤， 不作操作继续请求同一个step
+                else if(decision.equals("RETRY")){
+
                 }
 
                 // 发送到converter进行解析, 分别获取stepName和stepParams
                 def Map<String, Object> stepParams = parsedBody.params
                 // assert stepParams instanceof Map<String, Object>
 
-                def stepName = parsedBody.stepName
+                def String stepName = parsedBody.stepName
                 // assert stepName instanceof String
                 this.scripts.steps.echo("stepName: " + stepName)
-//
-//
-//
-//                // 处理decision的各种情况
-//                // 执行下一个step
-//                if(decision.equals("NEXT")){
-//                    stepNumber++
-//                    requestType = "RUNNING"
-//                }
-//                // build流程结束
-//                else if(decision.equals("END")){
-//                    flag = false
-//                }
-//                // 重试当前步骤， 不作操作继续请求同一个step
-//                else if(decision.equals("RETRY")){
-//
-//                }
-//
-//                // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
-//
-//                if(response.status == 200){
-//                    // 调用invokeMethod方法执行step
-//                    myExecutor.execution(stepName, stepParams)
-//                    // stageNumber += 1
-//                    // 执行step之后，返回json的分析数据，等待决策
-//                    requestType = "CONSULTING"
-//                } else {
-//                    // 出现网络错误，暂时退出. 应重发
-//                    this.scripts.steps.echo "Network connection error occurred"
-//                    break;
-//                }
+
+                // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
+
+                if(postResponseContent != ""){
+                    // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
+                    this.scripts.steps.node(){
+                        try{
+                            this.scripts.steps.invokeMethod(stepName, stepParams)
+                        } catch(err) {
+                            this.currentBuild.result = 'FAILURE'
+                            throw err
+                        }
+                    }
+                    requestType = "RUNNING"
+                } else {
+                    // 出现网络错误，暂时退出. 应重发
+                    this.scripts.steps.echo "Network connection error occurred"
+                    break;
+                }
             }
         } catch(err) {
             this.scripts.steps.echo("An error occurred: " + err)
@@ -268,6 +262,7 @@ public class IntelliAgent{
             postResponseContent = post.getInputStream().getText();
             return postResponseContent
         }
+        return ""
     }
 }
 
