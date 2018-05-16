@@ -26,14 +26,14 @@ class StepConverter {
         // def parsedBody = new JsonSlurper().parseText(responseJson)
         // readJSON需要安装插件pipeline-utility-steps
         def parsedBody = this.scripts.steps.readJSON(text: responseJson)
-        return parsedBody.executionStep.params
+        return parsedBody.params
     }
 
     def String responseResolverOfName(String responseJson){
         // def parsedBody = new JsonSlurper().parseText(responseJson)
         // readJSON需要安装插件pipeline-utility-steps
         def parsedBody = this.scripts.steps.readJSON(text: responseJson)
-        return parsedBody.executionStep.stepName
+        return parsedBody.stepName
     }
 
     def String responseResolverOfDecision(String responseJson){
