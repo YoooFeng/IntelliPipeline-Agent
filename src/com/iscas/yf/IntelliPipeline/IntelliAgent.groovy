@@ -111,24 +111,14 @@ public class IntelliAgent{
 
                 def changeSets = this.scripts.currentBuild.changeSets
 
-                def String commitSet = "";
 
-                // 处理changeSets
-                for(int i = 0; i < changeSets.size(); i++){
-                    def entries = changeSets[i].items
-                    for(int j = 0; j < entries.length; j++){
-                        def entry = entries[j]
-                        // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
-                        commitSet += "[${entry.commitId} : ${entry.author} : ${entry.msg}] "
-                    }
-                }
 
-                // Jenkins当前构建的控制台输出. getLog(maxLine) 获取最新的指定行数的log， 类型List<String>
-                def consoleOutput = this.scripts.currentBuild.rawBuild.getLogInputStream()
-                byte[] bytes = new byte[consoleOutput.available()]
-                consoleOutput.read(bytes);
-                String consoleStr = new String(bytes)
-                this.scripts.steps.echo("consoleStr: " + consoleStr);
+                // Jenkins当前构建的控制台输出. consoleStr是字符串， 验证可行
+//                def consoleOutput = this.scripts.currentBuild.rawBuild.getLogInputStream()
+//                byte[] bytes = new byte[consoleOutput.available()]
+//                consoleOutput.read(bytes);
+//                String consoleStr = new String(bytes)
+//                this.scripts.steps.echo("consoleStr: " + consoleStr);
 
                 // 当前构建的持续时间，单位毫秒
                 def durationTime = this.scripts.currentBuild.duration
@@ -136,19 +126,40 @@ public class IntelliAgent{
                 def currentResult = this.scripts.currentBuild.currentResult
                 this.scripts.steps.echo("currentResult: " + currentResult)
 
+                def buildNumber = this.scripts.currentBuild.number
+
                 def body = """ """
 
-                // POST body, 只在第一次时发送changeSet? 网络传输优化
-                // 参数都放到body里面来，不要放在url中！
-                body = """
-                    {"requestType": "$requestType",
-                     "stepNumber": "$stepNumber",
-                     "currentResult": "$currentResult",
-                     "commitSet": "$commitSet",
-                     "consoleOutput": "$consoleStr",
-                     "durationTime": "$durationTime"}
-                """
+                if(requestType == "INIT"){
 
+                    def String commitSet = "";
+                    // 只在INIT的时候处理一次changeSets
+                    for(int i = 0; i < changeSets.size(); i++){
+                        def entries = changeSets[i].items
+                        for(int j = 0; j < entries.length; j++){
+                            def entry = entries[j]
+                            // 将所有的commit都加入到changeLog中, 不同的commit用[]分割
+                            commitSet += "[${entry.commitId} : ${entry.author} : ${entry.msg}] "
+                        }
+                    }
+
+                    body = """
+                        {"requestType": "$requestType",
+                         "stepNumber": "$stepNumber",
+                         "buildNumber": "$buildNumber",
+                         "currentResult": "$currentResult",
+                         "commitSet": "$commitSet",
+                         "durationTime": "$durationTime"}
+                    """
+                } else {
+                    body = """
+                        {"requestType": "$requestType",
+                         "stepNumber": "$stepNumber",
+                         "buildNumber": "$buildNumber",
+                         "currentResult": "$currentResult",
+                         "durationTime": "$durationTime"}
+                    """
+                }
 
                 // 发送POST Request
                 def response = scripts.steps.httpRequest(
@@ -195,14 +206,6 @@ public class IntelliAgent{
 
                 }
 
-                // mock as "continue"
-//                def decision = parsedBody.decisionType;
-//                logger "decision:" + decision
-//
-//                def exeStep = parsedBody.executionStep;
-//                logger "step:" + exeStep
-
-
                 // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
 
                 if(response.status == 200){
@@ -210,21 +213,12 @@ public class IntelliAgent{
                     myExecutor.execution(stepName, stepParams)
                     // stageNumber += 1
                     // 执行step之后，返回json的分析数据，等待决策
-                    requestType = "consulting"
+                    requestType = "CONSULTING"
                 } else {
                     // 出现网络错误，暂时退出. 应重发
                     this.scripts.steps.echo "Network connection error occurred"
                     break;
                 }
-
-//                if(stageNumber > 8) {
-//                    flag = false
-//                }
-                // 不是GroovyShell类型
-                // assert this.scripts instanceof GroovyShell
-                // this.scripts.getClass() == intelliPipelineProxy
-                // logger(this.scripts.steps.getClass().toString())
-
             }
         } catch(err) {
             this.scripts.steps.echo("An error occurred: " + err)
