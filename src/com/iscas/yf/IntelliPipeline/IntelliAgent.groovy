@@ -184,57 +184,57 @@ public class IntelliAgent{
                 }
 
                 println(postResponseContent)
-
-                this.scripts.steps.echo('Status:' + response.status)
-
-                // Response为空？
-                this.scripts.steps.echo('Response:' + response.content)
-
-                // 先获取返回的decision
-                def String decision = myConverter.responseResolverOfDecision(response.content)
-                assert decision instanceof String
-                if(decision == "END"){
-                    break;
-                }
-
-
-                // 发送到converter进行解析, 分别获取stepName和stepParams
-                def Map<String, Object> stepParams = myConverter.responseResolverOfParams(response.content)
-                assert stepParams instanceof Map<String, Object>
-
-                def String stepName = myConverter.responseResolverOfName(response.content)
-                assert stepName instanceof String
-
-
-
-                // 处理decision的各种情况
-                // 执行下一个step
-                if(decision.equals("NEXT")){
-                    stepNumber++
-                    requestType = "RUNNING"
-                }
-                // build流程结束
-                else if(decision.equals("END")){
-                    flag = false
-                }
-                // 重试当前步骤， 不作操作继续请求同一个step
-                else if(decision.equals("RETRY")){
-
-                }
-
-                // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
-
-                if(response.status == 200){
-                    // 调用invokeMethod方法执行step
-                    myExecutor.execution(stepName, stepParams)
-                    // stageNumber += 1
-                    // 执行step之后，返回json的分析数据，等待决策
-                    requestType = "CONSULTING"
-                } else {
-                    // 出现网络错误，暂时退出. 应重发
-                    this.scripts.steps.echo "Network connection error occurred"
-                    break;
-                }
+                this.scripts.steps.echo(postResponseContent)
+//                this.scripts.steps.echo('Status:' + response.status)
+//
+//                // Response为空？
+//                this.scripts.steps.echo('Response:' + response.content)
+//
+//                // 先获取返回的decision
+//                def String decision = myConverter.responseResolverOfDecision(response.content)
+//                assert decision instanceof String
+//                if(decision == "END"){
+//                    break;
+//                }
+//
+//
+//                // 发送到converter进行解析, 分别获取stepName和stepParams
+//                def Map<String, Object> stepParams = myConverter.responseResolverOfParams(response.content)
+//                assert stepParams instanceof Map<String, Object>
+//
+//                def String stepName = myConverter.responseResolverOfName(response.content)
+//                assert stepName instanceof String
+//
+//
+//
+//                // 处理decision的各种情况
+//                // 执行下一个step
+//                if(decision.equals("NEXT")){
+//                    stepNumber++
+//                    requestType = "RUNNING"
+//                }
+//                // build流程结束
+//                else if(decision.equals("END")){
+//                    flag = false
+//                }
+//                // 重试当前步骤， 不作操作继续请求同一个step
+//                else if(decision.equals("RETRY")){
+//
+//                }
+//
+//                // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
+//
+//                if(response.status == 200){
+//                    // 调用invokeMethod方法执行step
+//                    myExecutor.execution(stepName, stepParams)
+//                    // stageNumber += 1
+//                    // 执行step之后，返回json的分析数据，等待决策
+//                    requestType = "CONSULTING"
+//                } else {
+//                    // 出现网络错误，暂时退出. 应重发
+//                    this.scripts.steps.echo "Network connection error occurred"
+//                    break;
+//                }
             }
         } catch(err) {
             this.scripts.steps.echo("An error occurred: " + err)
