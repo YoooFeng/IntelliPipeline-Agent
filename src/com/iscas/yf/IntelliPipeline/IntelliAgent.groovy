@@ -224,7 +224,7 @@ public class IntelliAgent{
             this.scripts.steps.echo("An error occurred: " + err)
             // 执行出错了
             // requestType = "error"
-            throw err
+//            throw err
         }
     }
 }
