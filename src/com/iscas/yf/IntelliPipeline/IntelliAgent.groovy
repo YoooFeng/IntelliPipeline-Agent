@@ -180,9 +180,10 @@ public class IntelliAgent{
 
                 def parsedBody = this.scripts.steps.readJSON(text: postResponseContent)
 
+
                 // 先获取返回的decision
-                def String decision = parsedBody.decision
-                assert decision instanceof String
+                def decision = parsedBody.decision
+                // assert decision instanceof String
                 this.scripts.steps.echo("decision: " + decision)
 
                 if(decision == "END"){
@@ -191,10 +192,10 @@ public class IntelliAgent{
 
                 // 发送到converter进行解析, 分别获取stepName和stepParams
                 def Map<String, Object> stepParams = parsedBody.params
-                assert stepParams instanceof Map<String, Object>
+                // assert stepParams instanceof Map<String, Object>
 
-                def String stepName = parsedBody.stepName
-                assert stepName instanceof String
+                def stepName = parsedBody.stepName
+                // assert stepName instanceof String
                 this.scripts.steps.echo("stepName: " + stepName)
 //
 //
