@@ -162,7 +162,7 @@ public class IntelliAgent{
                 }
 
                 // 发送POST Request
-                def response = scripts.steps.httpRequest(
+                def response = this.scripts.steps.httpRequest(
                         acceptType:'APPLICATION_JSON',
                         contentType:'APPLICATION_JSON',
                         httpMode:'POST',
