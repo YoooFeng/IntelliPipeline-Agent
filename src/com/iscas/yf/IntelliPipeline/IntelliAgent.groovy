@@ -185,6 +185,8 @@ public class IntelliAgent{
 
                 println(postResponseContent)
                 this.scripts.steps.echo(postResponseContent)
+
+                flag = false
 //                this.scripts.steps.echo('Status:' + response.status)
 //
 //                // Response为空？
