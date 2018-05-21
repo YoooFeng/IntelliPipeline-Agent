@@ -100,7 +100,7 @@ public class IntelliAgent{
         try {
             while(flag){
 
-                this.scripts.steps.echo("while loop")
+//                this.scripts.steps.echo("while loop")
                 // changeSets，只需要在开始构建时发送一次
                 // 直接把changeSets这个对象发回去，客户端再进行处理(ArrayList), 如何传输一个对象？不可行
                 // changeSets是两次build之间
@@ -170,17 +170,16 @@ public class IntelliAgent{
 //                    continue
 //                }
 
-                this.scripts.steps.echo("Response: $postResponseContent")
+//                this.scripts.steps.echo("Response: $postResponseContent")
 
                 def parsedBody = this.scripts.steps.readJSON(text: postResponseContent)
 
                 // 先获取返回的decision
                 def String decision = parsedBody.decisionType
                 // assert decision instanceof String
-                this.scripts.steps.echo("decision: " + decision)
+//                this.scripts.steps.echo("decision: " + decision)
 
                 // 先处理decision的各种情况
-                // 执行下一个step
                 if(decision.equals("NEXT")){
                     stepNumber++
                 }
@@ -189,9 +188,18 @@ public class IntelliAgent{
                     flag = false
                     break;
                 }
+                // 跳过此次build, 只执行一个Step: mail step
+                else if(decision.equals("SKIP_BUILD")){
+                    stepNumber = 9999;
+                }
                 // 重试当前步骤， 不作操作继续请求同一个step
                 else if(decision.equals("RETRY")){
 
+                }
+                // 跳过当前step的执行
+                else if(decision.equals("SKIP_STEP")){
+                    stepNumber++
+                    continue;
                 }
 
                 // 发送到converter进行解析, 分别获取stepName和stepParams
@@ -200,26 +208,28 @@ public class IntelliAgent{
 
                 def String stepName = parsedBody.stepName
                 // assert stepName instanceof String
-                this.scripts.steps.echo("stepName: " + stepName)
+//                this.scripts.steps.echo("stepName: " + stepName)
 
                 // 返回码从100-399，200表示成功返回。状态码不是String类型，是int类型
 
                 if(postResponseContent != ""){
                     // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
                     executeStep(stepName, stepParams)
-                    this.scripts.steps.echo("step execution end")
+//                    this.scripts.steps.echo("step execution end")
                     requestType = "RUNNING"
                 } else {
                     // 出现网络错误，暂时退出. 应重发
                     this.scripts.steps.echo "Network connection error occurred"
-                    break;
+                    requestType = "NETWORK_ERROR"
+                    // 5s后重试
+                    sleep(5000);
                 }
             }
         } catch(err) {
             this.scripts.steps.echo("An error occurred: " + err)
-            // 执行出错了
+            // Step执行出错了
             // requestType = "error"
-            throw err
+            requestType = "FAILURE"
         }
     }
 
