@@ -29,7 +29,7 @@ public class IntelliAgent{
         def flag = true
 
         // 没有执行step，request type为initializing
-        def requestType = "INIT"
+        def requestType = "START"
 
         // 将代码片段放入node代码段中
 //        scripts.node{
@@ -123,7 +123,6 @@ public class IntelliAgent{
                 def body = """ """
 
                 if(requestType == "INIT"){
-
                     def String commitSet = processCommitSet()
 
                     body = """
@@ -215,8 +214,12 @@ public class IntelliAgent{
                 if(postResponseContent != ""){
                     // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
                     executeStep(stepName, stepParams)
-//                    this.scripts.steps.echo("step execution end")
-                    requestType = "RUNNING"
+
+                    if(stepName.equals("git")) {
+                        requestType = "INIT"
+                    } else {
+                        requestType = "RUNNING"
+                    }
                 } else {
                     // 出现网络错误，暂时退出. 应重发
                     this.scripts.steps.echo "Network connection error occurred"
