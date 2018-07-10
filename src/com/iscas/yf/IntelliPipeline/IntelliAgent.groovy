@@ -263,11 +263,8 @@ public class IntelliAgent{
         post.getOutputStream().write(body.getBytes("UTF-8"))
         def postResponseCode = post.getResponseCode()
         def postResponseContent = ''
-        if(postResponseCode.equals(200)){
-            postResponseContent = post.getInputStream().getText();
-            return postResponseContent
-        }
-        return ""
+        postResponseContent = post.getInputStream().getText();
+        return postResponseContent
     }
 
     def executeStep(String stepName, Map<String, Object> stepParams){
