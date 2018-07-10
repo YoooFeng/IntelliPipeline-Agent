@@ -53,6 +53,7 @@ public class IntelliAgent{
                 this.scripts.steps.echo("currentResult: " + currentResult)
                 this.scripts.steps.echo("Job_Name: " + this.scripts.env.JOB_NAME)
 
+                def jobName = this.scripts.env.JOB_NAME
                 def buildNumber = this.scripts.currentBuild.number
 
                 def body = """ """
@@ -66,6 +67,7 @@ public class IntelliAgent{
                          "buildNumber": "$buildNumber",
                          "currentResult": "$currentResult",
                          "commitSet": "$commitSet",
+                         "jobName" : "$jobName",
                          "durationTime": "$durationTime"}
                     """
                 } else {
@@ -74,37 +76,12 @@ public class IntelliAgent{
                          "stepNumber": "$stepNumber",
                          "buildNumber": "$buildNumber",
                          "currentResult": "$currentResult",
+                         "jobName" : "$jobName",
                          "durationTime": "$durationTime"}
                     """
                 }
 
                 def postResponseContent = executePostRequest(body)
-
-                // 发送POST Request
-//                def response = this.scripts.steps.httpRequest(
-//                        acceptType:'APPLICATION_JSON',
-//                        contentType:'APPLICATION_JSON',
-//                        httpMode:'POST',
-//                        requestBody: body,
-//                        consoleLogResponseBody: true,
-//                        url: "http://localhost:8180/IntelliPipeline/build_data/upload")
-
-                // 抛弃使用HttpRequest Plugin, 改为Groovy原生方法
-//                def post = new URL("http://localhost:8180/IntelliPipeline/build_data/upload").openConnection();
-//
-//                post.setRequestMethod("POST")
-//                post.setDoOutput(true)
-//                post.setRequestProperty("Content-Type", "application/json")
-//                post.getOutputStream().write(body.getBytes("UTF-8"))
-//                def postResponseCode = post.getResponseCode()
-//                def postResponseContent = ''
-//                if(postResponseCode.equals(200)){
-//                    postResponseContent = post.getInputStream().getText();
-//                } else {
-//                    continue
-//                }
-
-//                this.scripts.steps.echo("Response: $postResponseContent")
 
                 def parsedBody = this.scripts.steps.readJSON(text: postResponseContent)
 
