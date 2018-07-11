@@ -145,6 +145,16 @@ public class IntelliAgent{
             // Step执行出错了
             // requestType = "error"
             requestType = "FAILURE"
+            body = """
+                        {"requestType": "$requestType",
+                         "stepNumber": "$stepNumber",
+                         "buildNumber": "$buildNumber",
+                         "currentResult": "$currentResult",
+                         "jobName" : "$jobName",
+                         "durationTime": "$durationTime"}
+                    """
+            // 失败的构建, 直接将失败结果返回
+            def postResponseContent = executePostRequest(body)
         }
     }
 
