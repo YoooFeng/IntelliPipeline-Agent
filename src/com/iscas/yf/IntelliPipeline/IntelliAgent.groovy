@@ -148,7 +148,7 @@ public class IntelliAgent{
             body = """
                         {"requestType": "$requestType",
                          "stepNumber": "$stepNumber",
-                         "buildNumber": "$buildNumber",
+                         "buildNumber": "0",
                          "currentResult": "$currentResult",
                          "jobName" : "$jobName",
                          "durationTime": "$durationTime"}
