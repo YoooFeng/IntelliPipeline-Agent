@@ -155,6 +155,7 @@ public class IntelliAgent{
                     """
             // 失败的构建, 直接将失败结果返回
             def postResponseContent = executePostRequest(body)
+            break;
         }
     }
 
