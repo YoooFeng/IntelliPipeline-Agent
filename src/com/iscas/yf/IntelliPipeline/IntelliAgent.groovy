@@ -125,9 +125,11 @@ public class IntelliAgent{
 
                 if(postResponseContent != ""){
                     // 调用invokeMethod方法执行step, node也可以赋予参数实现分布式执行
-                    executeStep(stepName, stepParams)
+                    def res = executeStep(stepName, stepParams)
 
-                    if(stepName.equals("git")) {
+                    if(!res) {
+                        requestType = "FAILURE"
+                    } else if(stepName.equals("git")){
                         requestType = "INIT"
                     } else {
                         requestType = "RUNNING"
@@ -141,7 +143,7 @@ public class IntelliAgent{
                 }
             }
         } catch(err) {
-            this.scripts.steps.echo("An error occurred: " + err)
+            this.scripts.steps.echo("Catch block.)
             // Step执行出错了
             // requestType = "error"
             requestType = "FAILURE"
@@ -195,9 +197,11 @@ public class IntelliAgent{
         this.scripts.steps.node(){
             try{
                 this.scripts.steps.invokeMethod(stepName, stepParams)
+                return true
             } catch(err) {
+                this.scripts.steps.echo("execute step block.")
                 this.currentBuild.result = 'FAILURE'
-                throw err
+                return false
             }
         }
     }
