@@ -143,7 +143,7 @@ public class IntelliAgent{
                 }
             }
         } catch(err) {
-            this.scripts.steps.echo("Catch block.)
+            this.scripts.steps.echo("Catch block.")
             // Step执行出错了
             // requestType = "error"
             requestType = "FAILURE"
