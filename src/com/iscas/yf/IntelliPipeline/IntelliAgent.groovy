@@ -146,12 +146,12 @@ public class IntelliAgent{
             this.scripts.steps.echo("Catch block.")
             // Step执行出错了
             // requestType = "error"
-            requestType = "FAILURE"
-            body = """
+            def requestType = "FAILURE"
+            def fail_body = """
                         {"requestType": "$requestType"}
                     """
             // 失败的构建, 直接将失败结果返回
-            def postResponseContent = executePostRequest(body)
+            def postResponseContent = executePostRequest(fail_body)
             break;
         }
     }
