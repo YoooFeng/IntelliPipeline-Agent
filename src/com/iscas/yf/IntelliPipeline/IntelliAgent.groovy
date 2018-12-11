@@ -148,7 +148,10 @@ public class IntelliAgent{
             // requestType = "error"
             def fail_type = "FAILURE"
             def fail_body = """
-                        {"requestType": "$fail_type"}
+                        {"requestType": "$fail_type",
+                         "stepNumber" : "-1",
+                         "buildNumber" : "0",
+                         "currentResult": "FAILURE"}
                     """
             // 失败的构建, 直接将失败结果返回
             def postResponseContent = executePostRequest(fail_body)
