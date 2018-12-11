@@ -147,10 +147,11 @@ public class IntelliAgent{
             // Step执行出错了
             // requestType = "error"
             def fail_type = "FAILURE"
+            def fail_buildNumber = this.scripts.currentBuild.number
             def fail_body = """
                         {"requestType": "$fail_type",
                          "stepNumber" : "-1",
-                         "buildNumber" : "0",
+                         "buildNumber" : "$fail_buildNumber",
                          "currentResult": "FAILURE"}
                     """
             // 失败的构建, 直接将失败结果返回
